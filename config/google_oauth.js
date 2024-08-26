@@ -1,37 +1,48 @@
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-const userModel = require('../models/user')
-const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { userModel } = require('../models/user');
+const passport = require('passport');
 
 passport.use(new GoogleStrategy({
-    clientID:process.env.GOOGLE_CLIENT_ID,
-    clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://www.example.com/auth/google/callback"
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/callback"
   },
   async function(accessToken, refreshToken, profile, cb) {
     try {
-     let user = userModel.findOne({email:profile.email[0].value})
+      const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
 
-     if(!user){
-      user = new userModel({
-        name:profile.displayName,
-        email:profile.email[0].value
-      })
-      await user.save()
-      cb(null,user)
-     }
+      if (!email) {
+        return cb(new Error('No email found'), false);
+      }
+
+      let user = await userModel.findOne({ email: email });
+
+      if (!user) {
+        user = new userModel({
+          name: profile.displayName,
+          email: email
+        });
+        await user.save();
+      }
+      
+      cb(null, user); 
     } catch (error) {
-      cb(error,false)
+      cb(error, false); 
     }
   }
 ));
 
-passport.serializeUser(function(user,cb){
- return cb(null,user._id)
-})
+passport.serializeUser(function(user, cb) {
+  cb(null, user._id);
+});
 
-passport.deserializeUser( async function(id,cb){
-  let user = await userModel.findOne({_id:id})
-  cb(null,user)
-})
+passport.deserializeUser(async function(id, cb) {
+  try {
+    let user = await userModel.findOne({ _id: id });
+    cb(null, user);
+  } catch (error) {
+    cb(error, null);
+  }
+});
 
-module.exports = passport
+module.exports = passport;

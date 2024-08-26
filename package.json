@@ -16,6 +16,7 @@
     "joi": "^17.13.3",
     "mongoose": "^8.5.4",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "tailwind": "^4.0.0"
   }
 }
