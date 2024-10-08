@@ -7,12 +7,11 @@ router.get('/google',passport.authenticate("google",{
 }), function(req,res){
 })
 
-router.get('/google/callback',passport.authenticate("google",{
-    successRedirect:"/profile",
-    failureRedirect:"/"
-}),
-function(req,res){}
-)
+router.get('/google/callback', passport.authenticate("google", {
+    failureRedirect: "/",
+}), function (req, res) {
+    res.redirect('/products');  // Redirect to /products
+});
 
 router.get('/logout', function(req, res, next){
     req.logout(function(err) {

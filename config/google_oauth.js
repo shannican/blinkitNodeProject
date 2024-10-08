@@ -20,7 +20,8 @@ passport.use(new GoogleStrategy({
       if (!user) {
         user = new userModel({
           name: profile.displayName,
-          email: email
+          email: email,
+          age: 25,
         });
         await user.save();
       }

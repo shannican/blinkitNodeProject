@@ -53,6 +53,11 @@ const userSchema = mongoose.Schema(
             type: Number,
             match: /^\d{10}$/
         },
+        age: {
+            type: Number,
+            min: 1,
+            max: 120 // Assuming 120 as the upper limit for age
+        },
         address: [addressSchema]
     },
     { timestamps: true }
@@ -75,6 +80,7 @@ function validateUser(user) {
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
         phone: Joi.string().pattern(/^\d{10}$/).required(),
+        age: Joi.number().min(1).max(120).required(),
         address: Joi.array().items(addressValidationSchema)
     });
 
